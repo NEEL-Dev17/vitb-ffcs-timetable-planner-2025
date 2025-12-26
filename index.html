@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIT Bhopal | FFCS Timetable Maker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="export-modal" id="exportModal">
+        <div class="export-content">
+            <button class="close-export" onclick="closeExportModal()">×</button>
+            <div class="export-header">
+                <h3><i class="fas fa-download"></i> Export Timetable</h3>
+                <p>Choose your preferred export format</p>
+            </div>
+            <div class="export-grid">
+                <div class="export-option pdf" onclick="exportPDF()">
+                    <i class="fas fa-file-pdf"></i>
+                    <h4>PDF Document</h4>
+                    <p>High-quality PDF with all details. Best for printing.</p>
+                </div>
+                <div class="export-option img" onclick="exportImage()">
+                    <i class="fas fa-image"></i>
+                    <h4>Image (PNG)</h4>
+                    <p>High-resolution image. Perfect for sharing online.</p>
+                </div>
+                <div class="export-option json" onclick="exportJSON()">
+                    <i class="fas fa-code"></i>
+                    <h4>JSON Data</h4>
+                    <p>Complete data backup. Useful for importing later.</p>
+                </div>
+                <div class="export-option csv" onclick="exportCSV()">
+                    <i class="fas fa-file-csv"></i>
+                    <h4>CSV Spreadsheet</h4>
+                    <p>Excel/Google Sheets compatible format.</p>
+                </div>
+            </div>
+            <div class="export-footer">
+                <i class="fas fa-info-circle"></i> Export includes all courses, timetable, and transition information
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div style="text-align: center;">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Preparing your export...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="university-header">
+            <div class="university-logo">
+                <div class="logo-placeholder">
+                    <i class="fas fa-university"></i>
+                </div>
+            </div>
+            <div class="university-info">
+                <div class="university-name">SMART FFCS TIMETABLE-PLANNER</div>
+                <div class="university-tagline">Make your own timetable without any hussle-bussle!</div>
+                <div class="academic-year">VIT BHOPAL STUDENTS</div>
+            </div>
+        </div>
+        
+        <div class="setup-section" id="setupSection">
+            <div class="setup-grid">
+                <div class="setup-card">
+                    <h3><i class="fas fa-graduation-cap"></i> Course Configuration</h3>
+                    
+                    <div class="input-group">
+                        <label for="courseCount"><i class="fas fa-book"></i> Number of Courses:</label>
+                        <input type="number" id="courseCount" min="1" max="15" value="8" placeholder="Enter number of courses">
+                    </div>
+                    
+                    <div class="color-selection">
+                        <div class="color-header">
+                            <h4><i class="fas fa-palette"></i> Select Course Color</h4>
+                            <button class="generate-btn" onclick="generateColorPalette()">
+                                <i class="fas fa-bolt"></i> Generate Colors
+                            </button>
+                        </div>
+                        
+                        <div class="color-palette" id="colorPalette"></div>
+                        
+                        <div class="selected-color-info" id="selectedColorInfo">
+                            <i class="fas fa-info-circle"></i> Select a color for your course
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setup-card">
+                    <h3><i class="fas fa-plus-circle"></i> Course Details</h3>
+                    
+                    <div class="input-group">
+                        <label for="courseCode" class="optional-field"><i class="fas fa-code"></i> Course Code:</label>
+                        <input type="text" id="courseCode" placeholder="e.g., CSE3016 (Optional)">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="courseName"><i class="fas fa-book"></i> Subject Name:</label>
+                        <input type="text" id="courseName" placeholder="e.g., Data Structures *" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="facultyName" class="optional-field"><i class="fas fa-user-tie"></i> Faculty Name:</label>
+                        <input type="text" id="facultyName" placeholder="e.g., Dr. John Smith (Optional)">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="courseLocation"><i class="fas fa-map-marker-alt"></i> Location:</label>
+                        <select id="courseLocation">
+                            <option value="">Select Classroom *</option>
+                            <option value="Ab02">Academic Block 02 (Ab02)</option>
+                            <option value="Ab01">Academic Block 01 (Ab01)</option>
+                            <option value="LC">Lab Complex (LC)</option>
+                            <option value="AR">Architecture Building (AR)</option>
+                            <option value="ONLINE">Online Class</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button onclick="addCourse()" class="btn btn-success" id="addCourseBtn">
+                    <i class="fas fa-plus-circle"></i> Add Course to Timetable
+                </button>
+                <button onclick="clearAll()" class="btn btn-danger">
+                    <i class="fas fa-trash-alt"></i> Clear All Courses
+                </button>
+                <button onclick="showExportModal()" class="btn btn-warning">
+                    <i class="fas fa-download"></i> Export Timetable
+                </button>
+            </div>
+        </div>
+
+        <div class="selected-slots" id="selectedSlots">
+            <h3><i class="fas fa-clock"></i> Selected Time Slots</h3>
+            <div class="slot-tags" id="slotTags"></div>
+            <div style="display: flex; gap: 15px; margin-top: 15px;">
+                <button onclick="confirmSelection()" class="btn btn-success" style="flex: 1;">
+                    <i class="fas fa-check-double"></i> Confirm Selection
+                </button>
+                <button onclick="cancelSelection()" class="btn btn-danger" style="flex: 1;">
+                    <i class="fas fa-times"></i> Cancel Selection
+                </button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item legend-red">
+                <div class="legend-color"></div>
+                <div class="legend-text">
+                    <h4><i class="fas fa-running"></i> Long Distance Transition</h4>
+                    <p>Ab02 ↔ Ab01 | Ab02 ↔ AR | Ab02 ↔ LC | Ab01 ↔ Ab02 | AR ↔ Ab02 | LC ↔ Ab02</p>
+                </div>
+            </div>
+            <div class="legend-item legend-yellow">
+                <div class="legend-color"></div>
+                <div class="legend-text">
+                    <h4><i class="fas fa-walking"></i> Medium Distance Transition</h4>
+                    <p>Ab01 ↔ AR | Ab01 ↔ LC | AR ↔ Ab01 | LC ↔ Ab01 | LC ↔ AR | AR ↔ LC</p>
+                </div>
+            </div>
+            <div class="legend-item legend-green">
+                <div class="legend-color"></div>
+                <div class="legend-text">
+                    <h4><i class="fas fa-check-circle"></i> Same Location / First Class</h4>
+                    <p>First class of the day is always Green. Same location transitions are Green.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="timetable-container">
+            <div class="timetable-header">
+                <h2><i class="fas fa-calendar-alt"></i> Semester Schedule / Week</h2>
+                <div class="timetable-status">
+                    <div class="status-item">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>Courses: <span id="courseCountDisplay">0</span></span>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Transitions: <span id="transitionCount">0</span></span>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Slots: <span id="totalSlots">0</span>/42</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timetable-grid">
+                <table id="timetable">
+                    <thead>
+                        <tr>
+                            <th class="time-column">Day/Time</th>
+                            <th>8:30-10:00</th>
+                            <th>10:05-11:35</th>
+                            <th>11:40-13:10</th>
+                            <th class="lunch-column">LUNCH</th>
+                            <th>13:15-14:45</th>
+                            <th>14:50-16:20</th>
+                            <th>16:25-17:55</th>
+                            <th>18:00-19:30</th>
+                            <th class="location-column">Location Info</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="courses-list" id="coursesList">
+            <h3><i class="fas fa-list-check"></i> Registered Courses</h3>
+            <div id="coursesContainer"></div>
+        </div>
+
+        <div class="footer">
+            <p><i class="fas fa-copyright"></i> 2024 VIT Bhopal University - Academic Planning System</p>
+            <p>Designed for Faculty of Engineering & Technology | Version 2.1</p>
+            <div class="footer-links">
+                <a href="https://github.com/NEEL-Dev17/VITB-FFCS-TimeTable-Planner"><i class="fab fa-github"></i> Source Code</a>
+                <a href="#" onclick="showExportModal()"><i class="fas fa-file-pdf"></i> Download PDF</a>
+                <a href="#" onclick="printTimetable()"><i class="fas fa-print"></i> Print Schedule</a>
+                <a href="#" onclick="showExportModal()"><i class="fas fa-download"></i> Export Data</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="notificationContainer"></div>
+
+    <script src="script.js"></script>
+    <script src="export.js"></script>
+</body>
+
+</html>
