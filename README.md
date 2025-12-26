@@ -151,9 +151,9 @@ Compatible with Excel/Google Sheets
 ### **🔧 Keyboard Shortcuts**
 Shortcut	Action
 ```
-Ctrl/Cmd + E	Open export modal
-Click	Select/deselect timetable slot
-Escape	Cancel current selection
+Ctrl/Cmd + E ->	Open export modal
+Click	Select/deselect -> timetable slot
+Escape ->	Cancel current selection
 ```
 ### **🌐 Browser Compatibility**
 - ✅ Chrome 60+
