@@ -897,40 +897,207 @@ th {
     border: 2px solid var(--campus-blue);
 }
 
-.courses-list {
-    background: linear-gradient(135deg, #F8F9FA, #E9ECEF);
-    padding: 25px;
-    border-radius: var(--border-radius);
-    margin-top: 25px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-    display: none;
-    border: 2px solid var(--campus-blue);
+/* Courses Table Styles */
+.courses-table-container {
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.courses-list h3 {
+.courses-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    table-layout: fixed;
+}
+
+.courses-table thead {
+    background: linear-gradient(135deg, var(--campus-blue), #001F3F);
+    color: white;
+}
+
+.courses-table thead th {
+    padding: 14px 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 2px solid var(--campus-gold);
     font-family: 'Exo 2', sans-serif;
-    font-size: 1.3rem;
-    color: var(--campus-blue);
-    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Column width adjustments */
+.courses-table thead th:nth-child(1) { width: 50px; } /* # */
+.courses-table thead th:nth-child(2) { width: 25%; } /* Course Name */
+.courses-table thead th:nth-child(3) { width: 12%; } /* Code */
+.courses-table thead th:nth-child(4) { width: 15%; } /* Faculty */
+.courses-table thead th:nth-child(5) { width: 10%; } /* Location */
+.courses-table thead th:nth-child(6) { width: 18%; } /* Time Slots */
+.courses-table thead th:nth-child(7) { width: 15%; } /* Actions */
+
+.courses-table tbody tr {
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s;
+}
+
+.courses-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.courses-table td {
+    padding: 12px 8px;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 0.9rem;
+    height: 60px;
+}
+
+/* Center align all cells */
+.courses-table td {
+    text-align: center;
+}
+
+/* Course Name column - left aligned with centered start */
+.courses-table td:nth-child(2) {
+    text-align: left;
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 10px;
 }
 
-.course-item {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 12px;
-    border-left: 5px solid;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    font-size: 0.9rem;
-    transition: transform 0.3s;
+/* Code and Faculty columns - centered */
+.courses-table td:nth-child(3),
+.courses-table td:nth-child(4) {
+    text-align: center;
 }
 
-.course-item:hover {
-    transform: translateX(5px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+/* Location column - centered */
+.courses-table td:nth-child(5) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Time Slots column - centered badges */
+.courses-table td:nth-child(6) {
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+}
+
+/* Actions column - centered buttons */
+.courses-table td:nth-child(7) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.course-color-indicator {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
+.slot-badge {
+    display: inline-block;
+    background: #e9ecef;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin: 2px;
+    border-left: 3px solid;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.action-buttons-table {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.action-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    font-weight: 600;
+    min-width: 80px;
+    justify-content: center;
+}
+
+.edit-btn {
+    background: linear-gradient(135deg, var(--campus-blue), #004488);
+    color: white;
+    border: 1px solid var(--campus-blue);
+}
+
+.edit-btn:hover {
+    background: linear-gradient(135deg, #004488, var(--campus-blue));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 51, 102, 0.2);
+}
+
+.delete-btn {
+    background: linear-gradient(135deg, var(--danger), #c82333);
+    color: white;
+    border: 1px solid var(--danger);
+}
+
+.delete-btn:hover {
+    background: linear-gradient(135deg, #c82333, var(--danger));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 20, 60, 0.2);
+}
+
+.no-courses-message {
+    text-align: center;
+    padding: 40px;
+    color: var(--gray);
+    font-style: italic;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+/* Ensure table scrolls on mobile */
+@media (max-width: 768px) {
+    .courses-table-container {
+        overflow-x: auto;
+    }
+    
+    .courses-table {
+        min-width: 800px;
+    }
+    
+    .action-buttons-table {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .action-btn {
+        min-width: 60px;
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
 }
 
 .footer {
@@ -1005,6 +1172,51 @@ th {
     border-left-color: var(--campus-gold);
 }
 
+.edit-mode-active {
+    position: relative;
+    border-color: var(--campus-gold) !important;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3) !important;
+    animation: editPulse 2s infinite;
+}
+
+@keyframes editPulse {
+    0% { box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3); }
+    50% { box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.6); }
+    100% { box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3); }
+}
+
+.edit-mode-label {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--campus-gold), #FFA500);
+    color: var(--campus-blue);
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    z-index: 100;
+    border: 2px solid white;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.optional-field {
+    color: var(--gray);
+    font-weight: 500;
+}
+
+.optional-field::after {
+    content: " (Optional)";
+    font-size: 0.85rem;
+    color: var(--gray);
+    font-weight: normal;
+}
+
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -1058,49 +1270,68 @@ th {
     .legend {
         grid-template-columns: 1fr;
     }
+    
+    .courses-table thead th {
+        padding: 10px 5px;
+        font-size: 0.85rem;
+    }
+    
+    .courses-table td {
+        padding: 10px 5px;
+        font-size: 0.85rem;
+    }
 }
 
-.edit-mode-active {
-    position: relative;
-    border-color: var(--campus-gold) !important;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3) !important;
-    animation: editPulse 2s infinite;
+.courses-table thead th {
+    text-align: center !important;
+    vertical-align: middle !important;
+    padding: 12px 8px !important;
 }
 
-@keyframes editPulse {
-    0% { box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3); }
-    50% { box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.6); }
-    100% { box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3); }
+.courses-table td {
+    text-align: center !important;
+    vertical-align: middle !important;
+    padding: 12px 8px !important;
 }
 
-.edit-mode-label {
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(135deg, var(--campus-gold), #FFA500);
-    color: var(--campus-blue);
-    padding: 6px 20px;
-    border-radius: 20px;
-    font-weight: 800;
-    font-size: 0.9rem;
-    z-index: 100;
-    border: 2px solid white;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    white-space: nowrap;
+.courses-table td:nth-child(2) div {
+    justify-content: center !important;
+    text-align: center !important;
 }
 
-.optional-field {
-    color: var(--gray);
-    font-weight: 500;
+.courses-table-container {
+    width: 100% !important;
+    overflow-x: auto !important;
 }
 
-.optional-field::after {
-    content: " (Optional)";
-    font-size: 0.85rem;
-    color: var(--gray);
-    font-weight: normal;
+.courses-table {
+    width: 100% !important;
+    table-layout: auto !important;
+}
+
+.courses-table th:nth-child(1) { width: 60px; } 
+.courses-table th:nth-child(2) { width: 20%; } 
+.courses-table th:nth-child(3) { width: 12%; } 
+.courses-table th:nth-child(4) { width: 15%; } 
+.courses-table th:nth-child(5) { width: 10%; } 
+.courses-table th:nth-child(6) { width: 20%; } 
+.courses-table th:nth-child(7) { width: 15%; } 
+
+.course-color-indicator {
+    display: inline-block !important;
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 4px !important;
+    vertical-align: middle !important;
+}
+
+.action-buttons {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 8px !important;
+}
+
+.slot-badge {
+    display: inline-block !important;
+    margin: 2px !important;
 }
