@@ -1,4 +1,3 @@
-// Global variables
 let courses = [];
 let selectedSlots = new Set();
 let colorPalette = [];
@@ -7,7 +6,6 @@ let currentCourse = null;
 let isSelecting = false;
 let editingCourseIndex = -1;
 
-// Slot definitions
 const timetableSlots = {
     'Mon': ['A11', 'B11', 'C11', 'A21', 'A14', 'B21', 'C21'],
     'Tue': ['D11', 'E11', 'F11', 'D21', 'E14', 'E21', 'F21'],
@@ -19,14 +17,12 @@ const timetableSlots = {
 
 const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-// Initialize
 document.addEventListener('DOMContentLoaded', function() {
     initializeTimetable();
     generateColorPalette();
     updateTotalSlots();
 });
 
-// Generate color palette
 function generateColorPalette() {
     const count = parseInt(document.getElementById('courseCount').value) || 6;
     colorPalette = [];
@@ -46,7 +42,6 @@ function generateColorPalette() {
     showNotification(`Generated ${count} academic color themes`, 'info');
 }
 
-// Display color palette
 function displayColorPalette() {
     const container = document.getElementById('colorPalette');
     container.innerHTML = '';
@@ -66,7 +61,6 @@ function displayColorPalette() {
     });
 }
 
-// Select color
 function selectColor(index) {
     document.querySelectorAll('.color-item').forEach(item => {
         item.classList.remove('selected');
@@ -84,7 +78,6 @@ function selectColor(index) {
     `;
 }
 
-// HSL to Hex conversion
 function hslToHex(h, s, l) {
     h /= 360;
     s /= 100;
@@ -114,7 +107,6 @@ function hslToHex(h, s, l) {
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
-// Initialize timetable
 function initializeTimetable() {
     const tbody = document.querySelector('#timetable tbody');
     tbody.innerHTML = '';
@@ -161,7 +153,6 @@ function initializeTimetable() {
     });
 }
 
-// Add/Update course
 function addCourse() {
     const courseCode = document.getElementById('courseCode').value.trim();
     const courseName = document.getElementById('courseName').value.trim();
@@ -219,7 +210,6 @@ function addCourse() {
     }
 }
 
-// Handle cell click
 function handleCellClick(slotId) {
     if (!isSelecting || !currentCourse) return;
     
@@ -245,7 +235,6 @@ function handleCellClick(slotId) {
     updateSelectedSlotsDisplay();
 }
 
-// Update selected slots display
 function updateSelectedSlotsDisplay() {
     const container = document.getElementById('slotTags');
     
@@ -266,7 +255,6 @@ function updateSelectedSlotsDisplay() {
     container.innerHTML = tags;
 }
 
-// Remove slot
 function removeSlot(slotId) {
     selectedSlots.delete(slotId);
     const cell = document.getElementById(slotId);
@@ -276,7 +264,6 @@ function removeSlot(slotId) {
     updateSelectedSlotsDisplay();
 }
 
-// Confirm selection
 function confirmSelection() {
     if (selectedSlots.size === 0) {
         showNotification('Please select at least one time slot', 'error');
@@ -297,13 +284,11 @@ function confirmSelection() {
     showNotification(`Course "${currentCourse.name}" ${editingCourseIndex !== -1 ? 'updated' : 'added'} successfully!`, 'success');
 }
 
-// Cancel selection
 function cancelSelection() {
     resetSelection();
     showNotification('Selection cancelled', 'info');
 }
 
-// Reset selection
 function resetSelection() {
     selectedSlots.forEach(slot => {
         const cell = document.getElementById(slot);
@@ -329,7 +314,6 @@ function resetSelection() {
     resetEditMode();
 }
 
-// Reset edit mode
 function resetEditMode() {
     const setupSection = document.getElementById('setupSection');
     const addCourseBtn = document.getElementById('addCourseBtn');
@@ -346,45 +330,49 @@ function resetEditMode() {
     editingCourseIndex = -1;
 }
 
-// Update timetable
 function updateTimetable() {
     days.forEach(day => {
         timetableSlots[day].forEach(slotId => {
             const cell = document.getElementById(slotId);
-            cell.className = 'empty-slot';
-            cell.onclick = () => handleCellClick(slotId);
-            cell.innerHTML = `<span style="font-weight: 700;">${slotId}</span>`;
+            if (cell) {
+                cell.className = 'empty-slot';
+                cell.onclick = () => handleCellClick(slotId);
+                cell.innerHTML = `<span style="font-weight: 700;">${slotId}</span>`;
+                cell.classList.remove('cell-selected'); // Remove selection highlight
+            }
         });
     });
 
     courses.forEach(course => {
         course.slots.forEach(slotId => {
             const cell = document.getElementById(slotId);
-            cell.className = 'course-slot';
-            cell.onclick = null;
-            cell.style.backgroundColor = `${course.color}15`;
-            cell.style.borderColor = course.color;
-            cell.style.boxShadow = `0 2px 8px ${course.color}30`;
-            
-            let contentHTML = `
-                <div class="course-name">${course.name}</div>
-            `;
-            
-            if (course.code !== 'N/A') {
-                contentHTML += `<div class="course-code">${course.code}</div>`;
+            if (cell) {
+                cell.className = 'course-slot';
+                cell.onclick = null;
+                cell.style.backgroundColor = `${course.color}15`;
+                cell.style.borderColor = course.color;
+                cell.style.boxShadow = `0 2px 8px ${course.color}30`;
+                
+                let contentHTML = `
+                    <div class="course-name">${course.name}</div>
+                `;
+                
+                if (course.code !== 'N/A') {
+                    contentHTML += `<div class="course-code">${course.code}</div>`;
+                }
+                
+                if (course.faculty !== 'Not specified') {
+                    contentHTML += `<div class="course-faculty">${course.faculty}</div>`;
+                }
+                
+                contentHTML += `
+                    <div class="course-venue" style="background-color: ${course.color}40; color: ${getContrastColor(course.color)}; border: 1px solid ${course.color}60;">
+                        ${course.location}
+                    </div>
+                `;
+                
+                cell.innerHTML = contentHTML;
             }
-            
-            if (course.faculty !== 'Not specified') {
-                contentHTML += `<div class="course-faculty">${course.faculty}</div>`;
-            }
-            
-            contentHTML += `
-                <div class="course-venue" style="background-color: ${course.color}40; color: ${getContrastColor(course.color)}; border: 1px solid ${course.color}60;">
-                    ${course.location}
-                </div>
-            `;
-            
-            cell.innerHTML = contentHTML;
         });
     });
 
@@ -394,13 +382,11 @@ function updateTimetable() {
     updateTotalSlots();
 }
 
-// Update total slots count
 function updateTotalSlots() {
     const totalFilledSlots = courses.reduce((total, course) => total + course.slots.length, 0);
     document.getElementById('totalSlots').textContent = totalFilledSlots;
 }
 
-// Update location transitions
 function updateLocationTransitions() {
     let totalTransitions = 0;
     
@@ -463,7 +449,6 @@ function updateLocationTransitions() {
     document.getElementById('transitionCount').textContent = totalTransitions;
 }
 
-// Get time index
 function getTimeIndex(slotId) {
     const timeOrder = {
         'A11': 0, 'B11': 1, 'C11': 2, 'A21': 3, 'A14': 4, 'B21': 5, 'C21': 6,
@@ -476,7 +461,6 @@ function getTimeIndex(slotId) {
     return timeOrder[slotId] || 0;
 }
 
-// Get transition type
 function getTransitionType(loc1, loc2) {
     const redTransitions = [
         ['Ab02', 'Ab01'], ['Ab01', 'Ab02'],
@@ -521,7 +505,6 @@ function getTransitionType(loc1, loc2) {
     return null;
 }
 
-// Update day location info
 function updateDayLocationInfo(day) {
     const daySlots = timetableSlots[day];
     const coursesForDay = courses.filter(course => 
@@ -550,7 +533,6 @@ function updateDayLocationInfo(day) {
     `;
 }
 
-// Get contrast color
 function getContrastColor(hexColor) {
     const r = parseInt(hexColor.substr(1, 2), 16);
     const g = parseInt(hexColor.substr(3, 2), 16);
@@ -559,52 +541,81 @@ function getContrastColor(hexColor) {
     return luminance > 0.5 ? '#000000' : '#FFFFFF';
 }
 
-// Update courses list
 function updateCoursesList() {
     const container = document.getElementById('coursesContainer');
+    const coursesListSection = document.getElementById('coursesList');
     
     if (courses.length === 0) {
-        document.getElementById('coursesList').style.display = 'none';
+        coursesListSection.style.display = 'none';
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--gray); font-style: italic;"><i class="fas fa-book-open"></i><br>No courses added yet. Add your first course above!</div>';
         return;
     }
     
-    document.getElementById('coursesList').style.display = 'block';
-    
-    const coursesHTML = courses.map((course, index) => `
-        <div class="course-item" style="border-left-color: ${course.color}">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <div style="flex: 1;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                        <div style="font-weight: 800; color: ${course.color}; font-size: 1.1rem;">
-                            ${course.name}
-                        </div>
-                    </div>
-                    <div style="color: var(--gray); font-size: 0.9rem; line-height: 1.5;">
-                        ${course.code !== 'N/A' ? `<div><i class="fas fa-code"></i> ${course.code}</div>` : ''}
-                        ${course.faculty !== 'Not specified' ? `<div><i class="fas fa-user-tie"></i> ${course.faculty}</div>` : ''}
-                        <div style="margin-top: 3px;"><i class="fas fa-map-marker-alt"></i> ${course.location} • <i class="fas fa-clock"></i> ${course.slots.join(', ')}</div>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 10px; margin-left: 15px;">
-                    <button onclick="editCourse(${index})" style="padding: 6px 12px; background: var(--campus-blue); 
-                           color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 5px;">
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
-                    <button onclick="deleteCourse(${index})" style="padding: 6px 12px; background: var(--danger); 
-                           color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 5px;">
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
-                </div>
-            </div>
+    coursesListSection.style.display = 'block';
+
+    container.innerHTML = `
+        <div style="overflow-x: auto;">
+            <table border="1" style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                <thead>
+                    <tr style="background: #003366; color: white;">
+                        <th style="padding: 10px; width: 75px; font-size: 20px;">Sl No.</th>
+                        <th style="padding: 10px; font-size: 20px;">Course Name</th>
+                        <th style="padding: 10px; font-size: 20px;">CourseCode</th>
+                        <th style="padding: 10px; font-size: 20px;">Faculty</th>
+                        <th style="padding: 10px; font-size: 20px;">Location</th>
+                        <th style="padding: 10px; font-size: 20px;">Time Slots</th>
+                        <th style="padding: 10px; font-size: 20px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${courses.map((course, index) => {
+                        console.log(`Course ${index + 1}:`, {
+                            name: course.name,
+                            code: course.code,
+                            faculty: course.faculty,
+                            location: course.location,
+                            slots: course.slots
+                        });
+                        
+                        return `
+                            <tr>
+                                <td style="text-align: center; padding: 10px; font-size: 18px;">${index + 1}</td>
+                                <td style="padding: 10px; font-size: 18px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <div style="width: 12px; height: 12px; background: ${course.color}; border-radius: 2px;"></div>
+                                        ${course.name}
+                                    </div>
+                                </td>
+                                <td style="text-align: center; padding: 10px; font-size: 18px;">${course.code}</td>
+                                <td style="text-align: center; padding: 10px; font-size: 18px;">${course.faculty}</td>
+                                <td style="text-align: center; padding: 10px;"><strong>${course.location}</strong></td>
+                                <td style="text-align: center; padding: 10px font-size: 18px;">
+                                    ${course.slots.map(slot => `<span style="display: inline-block; padding: 3px 8px; margin: 2px; background: #f0f0f0; border-radius: 4px;">${slot}</span>`).join('')}
+                                </td>
+                                <td style="text-align: center; padding: 10px; font-size: 18px;">
+                                    <div style="display: flex; gap: 5px; justify-content: center;">
+                                        <button onclick="editCourse(${index})" style="padding: 5px 10px; background: #003366; color: white; border: none; border-radius: 10px; cursor: pointer;">Edit</button>
+                                        <button onclick="deleteCourse(${index})" style="padding: 5px 10px; background: #dc143c; color: white; border: none; border-radius: 10px; cursor: pointer;">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
         </div>
-    `).join('');
-    
-    container.innerHTML = coursesHTML;
+    `;
 }
 
-// Edit course
 function editCourse(index) {
     const course = courses[index];
+
+    selectedSlots.forEach(slot => {
+        const cell = document.getElementById(slot);
+        if (cell) {
+            cell.classList.remove('cell-selected');
+        }
+    });
     
     document.getElementById('courseCode').value = course.code !== 'N/A' ? course.code : '';
     document.getElementById('courseName').value = course.name;
@@ -614,33 +625,37 @@ function editCourse(index) {
     let colorIndex = colorPalette.findIndex(c => c.color === course.color);
     
     if (colorIndex === -1) {
-
         colorPalette.push({ 
             color: course.color, 
             name: course.colorName || `Custom - ${course.name.substring(0, 15)}...` 
         });
         colorIndex = colorPalette.length - 1;
         displayColorPalette();
-    }  
-
+    }
+    
     selectColor(colorIndex);
     
     editingCourseIndex = index;
     currentCourse = { ...course };
-    
+
     selectedSlots = new Set(course.slots);
     document.getElementById('selectedSlots').style.display = 'block';
     isSelecting = true;
-    
+
     days.forEach(day => {
         timetableSlots[day].forEach(slotId => {
             const cell = document.getElementById(slotId);
-            if (selectedSlots.has(slotId)) {
-                cell.classList.add('cell-selected');
-            } else {
+            if (cell) {
                 cell.classList.remove('cell-selected');
             }
         });
+    });
+
+    course.slots.forEach(slotId => {
+        const cell = document.getElementById(slotId);
+        if (cell) {
+            cell.classList.add('cell-selected');
+        }
     });
     
     updateSelectedSlotsDisplay();
@@ -665,7 +680,6 @@ function editCourse(index) {
     showNotification(`Editing "${course.name}". Modify details and click UPDATE.`, 'info');
 }
 
-// Delete course
 function deleteCourse(index) {
     if (confirm(`Delete course "${courses[index].name}"?`)) {
 
@@ -682,7 +696,6 @@ function deleteCourse(index) {
     }
 }
 
-// Clear all
 function clearAll() {
     if (courses.length === 0) {
         showNotification('No courses to clear', 'info');
@@ -706,7 +719,6 @@ function clearAll() {
     }
 }
 
-// Show notification
 function showNotification(message, type) {
     const container = document.getElementById('notificationContainer');
     
