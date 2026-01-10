@@ -3,16 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="google-site-verification" content="n3ECCgpaQlHPmdGPsSj71fH-tCttGjCO3JVqHgaMEl8" />
+    <meta name="google-site-verification" content="n3ECCgpaQlHPmdGPsSj71fH-tCttGjCO3JVqHgaMEl8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VIT Bhopal | FFCS Timetable Maker</title>
-    <meta name="description" content="Create your FFCS timetable online for VIT Bhopal. Plan semester schedule with classroom transition tracking. Free timetable maker for engineering students.">
-    <meta name="keywords" content="VIT Bhopal FFCS timetable, VIT timetable maker, FFCS planner, VIT Bhopal schedule, semester timetable, academic planner, VIT course scheduling">
-    <meta name="description" content="Create your FFCS timetable online for VIT Bhopal. Plan semester schedule with classroom transition tracking. Free timetable maker for engineering students.">
-    <meta name="keywords" content="VIT Bhopal FFCS timetable, VIT timetable maker, FFCS planner, VIT Bhopal schedule, semester timetable, academic planner, VIT course scheduling">
-    <meta name="language" content="English">
-    <meta name="geo.region" content="IN-MP">
-    <meta name="geo.placename" content="Bhopal">
-    <link rel="canonical" href="https://vitb-ffcs-timetable-planner.vercel.app/">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -226,16 +219,25 @@
             </div>
         </div>
 
-        <div class="courses-list" id="coursesList">
-            <h3><i class="fas fa-list-check"></i> Registered Courses</h3>
-            <div id="coursesContainer"></div>
+        <div class="section" id="coursesList" style="display: none;">
+            <div class="section-header">
+                <h3><i class="fas fa-list-alt"></i> Registered Courses</h3><br>
+                <div class="section-stats">
+                    <button onclick="clearAll()" class="btn btn-danger" style="margin-left: 10px; padding: 8px 16px;">
+                        <i class="fas fa-trash"></i> Clear All
+                    </button>
+                </div>
+            </div>
+            <br>
+            <div id="coursesContainer">
+            </div>
         </div>
 
         <div class="footer">
             <p><i class="fas fa-copyright"></i> 2024 VIT Bhopal University - Academic Planning System</p>
             <p>Designed for Faculty of Engineering & Technology | Version 2.1</p>
             <div class="footer-links">
-                <a href="https://github.com/NEEL-Dev17/vitb-ffcs-timetable-planner-2025"><i class="fab fa-github"></i> Source Code</a>
+                <a href="https://github.com/NEEL-Dev17/VITB-FFCS-TimeTable-Planner"><i class="fab fa-github"></i> Source Code</a>
                 <a href="#" onclick="showExportModal()"><i class="fas fa-file-pdf"></i> Download PDF</a>
                 <a href="#" onclick="printTimetable()"><i class="fas fa-print"></i> Print Schedule</a>
                 <a href="#" onclick="showExportModal()"><i class="fas fa-download"></i> Export Data</a>
@@ -247,11 +249,118 @@
 
     <script src="script.js"></script>
     <script src="export.js"></script>
+    
+    <script>
+        function printTimetable() {
+            const printContent = document.querySelector('.timetable-container').outerHTML;
+            const coursesContent = document.getElementById('coursesContainer').innerHTML;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>VIT Bhopal Timetable</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            padding: 20px;
+                        }
+                        h1 {
+                            text-align: center;
+                            color: #003366;
+                            margin-bottom: 20px;
+                        }
+                        .timetable-container {
+                            width: 100%;
+                            overflow-x: auto;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-bottom: 30px;
+                        }
+                        th, td {
+                            border: 1px solid #ddd;
+                            padding: 10px;
+                            text-align: center;
+                            vertical-align: middle;
+                        }
+                        th {
+                            background-color: #003366;
+                            color: white;
+                            font-weight: bold;
+                        }
+                        .course-slot {
+                            padding: 8px;
+                            border-radius: 4px;
+                            margin: 2px;
+                        }
+                        .course-name {
+                            font-weight: bold;
+                            font-size: 12px;
+                        }
+                        .course-venue {
+                            font-size: 10px;
+                            background: #f0f0f0;
+                            padding: 2px 4px;
+                            border-radius: 3px;
+                            margin-top: 2px;
+                        }
+                        .courses-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 20px;
+                        }
+                        .courses-table th {
+                            background-color: #003366;
+                            color: white;
+                            padding: 10px;
+                            text-align: center;
+                        }
+                        .courses-table td {
+                            padding: 8px;
+                            border: 1px solid #ddd;
+                        }
+                        @media print {
+                            @page {
+                                size: landscape;
+                                margin: 0.5cm;
+                            }
+                            body {
+                                margin: 0;
+                                padding: 0;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>VIT Bhopal - Semester Timetable</h1>
+                    ${printContent}
+                    ${coursesContent ? `<h2>Registered Courses</h2>${coursesContent}` : ''}
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.close();
+                        }
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+        
+        document.getElementById('exportModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeExportModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('exportModal').style.display === 'flex') {
+                closeExportModal();
+            }
+        });
+    </script>
 </body>
-
 </html>
-
-
-
-
-
