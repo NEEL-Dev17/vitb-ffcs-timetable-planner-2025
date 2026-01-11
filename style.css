@@ -23,6 +23,7 @@
 }
 
 body {
+    zoom: 0.9999999999999995;
     font-family: 'Inter', sans-serif;
     background: linear-gradient(135deg, #F5F7FA 0%, #E6E9F0 100%);
     min-height: 100vh;
@@ -1335,3 +1336,4 @@ th {
     display: inline-block !important;
     margin: 2px !important;
 }
+
